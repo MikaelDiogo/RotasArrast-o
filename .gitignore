@@ -4,4 +4,5 @@ package.json
 package-lock.json
 verify_tmp.mjs
 *.png
+!uploads/*.png
 .thumbnail/
