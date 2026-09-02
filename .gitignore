@@ -1,0 +1,7 @@
+node_modules/
+extracted/
+package.json
+package-lock.json
+verify_tmp.mjs
+*.png
+.thumbnail/

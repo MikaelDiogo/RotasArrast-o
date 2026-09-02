@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trecho do Arrastão — Crateús | Janaína Farias &amp; Giordana Mano</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C4122F; --red-dp:#8B0C21; --pink:#F3AFC6; --pink-soft:#FBE4EC;
+    --cream:#FFF7F1; --paper:#FFFFFF; --ink:#1B1817; --ink-60:rgba(27,24,23,.6);
+    --ink-35:rgba(27,24,23,.35); --line:rgba(27,24,23,.10); --green:#0F7A46;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html{zoom:.9}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased}
+  a{color:var(--red)}a:hover{color:var(--red-dp)}
+  button{font-family:inherit}
+
+  /* ---------- screens ---------- */
+  .screen{position:fixed;inset:0;display:flex;flex-direction:column;transition:opacity .45s ease, transform .45s ease}
+  #splash{position:absolute;inset:0;min-height:100%;overflow-y:auto;overflow-x:hidden}
+  .screen[hidden]{display:none}
+  .screen.out{opacity:0;transform:scale(1.02);pointer-events:none}
+
+  /* ---------- 1. splash ---------- */
+  #splash{background:
+      radial-gradient(120% 80% at 50% 105%, var(--pink-soft) 0%, rgba(251,228,236,0) 62%),
+      linear-gradient(180deg,#FFFDFB 0%, var(--cream) 55%, #FFF1E9 100%)}
+  .sp-wrap{flex:1;display:grid;grid-template-columns:minmax(340px,46%) 1fr;align-items:stretch;max-width:1500px;margin:0 auto;width:100%}
+  .sp-copy{display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,2.6vh,26px);padding:clamp(24px,5vh,56px) 12px clamp(24px,5vh,56px) 64px;position:relative;z-index:2}
+  .badge{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;background:var(--red);color:#fff;
+    padding:8px 15px 8px 12px;border-radius:100px;font-size:12.5px;font-weight:500;letter-spacing:.09em;text-transform:uppercase}
+  .badge i{width:7px;height:7px;border-radius:50%;background:var(--pink);display:block;box-shadow:0 0 0 4px rgba(243,175,198,.32)}
+  .sp-eyebrow{font-size:14px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-35);margin:0}
+  h1{margin:0;font-size:clamp(34px,min(4.6vw,7.4vh),68px);line-height:.98;font-weight:700;letter-spacing:-.028em;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--red);position:relative;white-space:nowrap}
+  h1 em::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.13em;background:var(--pink);z-index:-1;border-radius:2px}
+  .sp-names{display:flex;flex-wrap:wrap;gap:10px}
+  .name-chip{display:flex;flex-direction:column;gap:2px;background:var(--paper);border:1px solid var(--line);
+    border-radius:14px;padding:11px 17px;box-shadow:0 1px 2px rgba(27,24,23,.04)}
+  .name-chip b{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .name-chip span{font-size:11.5px;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-35)}
+  .sp-lede{margin:0;max-width:44ch;font-size:17px;line-height:1.55;color:var(--ink-60);font-weight:300;text-wrap:pretty}
+  .sp-cta{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+  .btn{border:0;cursor:pointer;display:inline-flex;align-items:center;gap:12px;background:var(--red);color:#fff;
+    font-size:17px;font-weight:600;letter-spacing:-.01em;padding:18px 26px;border-radius:10px;min-height:56px;
+    box-shadow:0 10px 24px -10px rgba(196,18,47,.65);transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+  .btn:hover{background:var(--red-dp);transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(196,18,47,.7)}
+  .btn:active{transform:translateY(0)}
+  .btn .arrow{width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,.2);display:grid;place-items:center;font-size:14px}
+  .sp-meta{font-size:13.5px;font-weight:400;color:var(--ink-35);line-height:1.5}
+  .sp-meta b{color:var(--ink-60);font-weight:500}
+
+  .sp-photo{position:relative;display:flex;align-items:flex-end;justify-content:center;min-width:0}
+  .sp-photo img{width:100%;max-width:760px;height:auto;max-height:88vh;object-fit:contain;object-position:bottom;
+    mix-blend-mode:multiply;filter:saturate(1.04)}
+  .sp-photo::before{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+    width:min(74%,620px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(243,175,198,.5),rgba(243,175,198,0) 68%)}
+  .sp-stamp{position:absolute;left:2%;top:12%;transform:rotate(-9deg);font-size:12px;font-weight:500;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--green);border:2px solid var(--green);border-radius:8px;padding:7px 11px;opacity:.75;background:rgba(255,255,255,.7)}
+  .sp-foot{padding:16px 64px 22px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-35);border-top:1px solid var(--line)}
+
+  /* ---------- 2. app ---------- */
+  #app{background:var(--paper)}
+  .topbar{display:flex;align-items:center;gap:18px;padding:13px 20px;background:var(--paper);border-bottom:1px solid var(--line);z-index:5}
+  .home-btn{border:1px solid var(--line);background:var(--paper);cursor:pointer;width:40px;height:40px;border-radius:8px;
+    display:grid;place-items:center;color:var(--ink-60);font-size:17px;flex:none}
+  .home-btn:hover{background:var(--cream);color:var(--red)}
+  .tb-title{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .tb-title span{font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-35)}
+  .tb-title b{font-size:17.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tb-spacer{flex:1}
+  .route-select{border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:500;
+    color:var(--ink);background:var(--paper);cursor:pointer;min-height:40px}
+  .play-btn{border:0;cursor:pointer;background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;padding:0 18px;height:40px;
+    border-radius:8px;display:inline-flex;align-items:center;gap:9px;white-space:nowrap}
+  .play-btn:hover{background:var(--red)}
+  .play-btn.on{background:var(--red)}
+
+  .body{flex:1;display:grid;grid-template-columns:378px 1fr;min-height:0}
+  .panel{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:var(--paper)}
+  .panel-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+  .stat-row{display:flex;gap:8px}
+  .stat{flex:1;background:var(--cream);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+  .stat b{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .stat span{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-35)}
+  .note{display:flex;gap:9px;background:var(--pink-soft);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.45;color:#7A2540}
+  .note b{font-weight:600}
+  .list{overflow-y:auto;padding:10px 12px 28px;flex:1;display:flex;flex-direction:column;gap:2px}
+  .stop{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:12px 10px;border-radius:14px;
+    border:1px solid transparent;cursor:pointer;text-align:left;background:none;position:relative}
+  .stop:hover{background:var(--cream)}
+  .stop.active{background:#fff;border-color:rgba(196,18,47,.28);box-shadow:0 6px 18px -12px rgba(196,18,47,.55)}
+  .stop::before{content:"";position:absolute;left:26px;top:38px;bottom:-2px;width:2px;background:repeating-linear-gradient(180deg,var(--line) 0 4px,transparent 4px 8px)}
+  .stop:last-child::before{display:none}
+  .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:600;
+    background:var(--cream);color:var(--ink-60);border:1.5px solid var(--line);z-index:1}
+  .stop.active .dot,.stop.is-start .dot{background:var(--red);color:#fff;border-color:var(--red)}
+  .stop.is-end .dot{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .stop h3{margin:0;font-size:15.5px;font-weight:600;letter-spacing:-.015em;line-height:1.25}
+  .stop p{margin:4px 0 0;font-size:12.5px;color:var(--ink-35);font-weight:400;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tag{font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:6px;
+    background:var(--pink-soft);color:#7A2540}
+  .tag.g{background:rgba(15,122,70,.12);color:var(--green)}
+  .map-wrap{position:relative;min-height:0}
+  #map{position:absolute;inset:0;background:#E8E2DC}
+  .legend{position:absolute;left:14px;bottom:22px;z-index:600;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);
+    border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;
+    box-shadow:0 8px 22px -14px rgba(27,24,23,.4)}
+  .legend b{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-35)}
+  .legend div{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:400}
+  .sw{width:14px;height:14px;border-radius:50%;flex:none}
+  .mobile-only{display:none}
+  .list::-webkit-scrollbar{width:3px}
+  .list::-webkit-scrollbar-track{background:transparent}
+  .list::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+  .list::-webkit-scrollbar-thumb:hover{background:var(--ink-35)}
+
+  /* markers — bolinhas */
+  .pin{position:relative;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+    background:var(--red);border:2.5px solid #fff;box-shadow:0 3px 10px -3px rgba(0,0,0,.5);
+    transition:transform .2s ease}
+  .pin b{color:#fff;font-size:12px;font-weight:600;font-family:Inter,sans-serif;line-height:1}
+  .pin.end{background:var(--green);border-color:#fff}
+  .pin.start{background:#fff;border:2.5px solid var(--red)}
+  .pin.start b{color:var(--red)}
+  .pin.sel{transform:scale(1.35);z-index:900}
+  .pin.start::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--red);opacity:.5;animation:ping 1.9s ease-out infinite}
+  @keyframes ping{0%{transform:scale(.85);opacity:.6}100%{transform:scale(1.45);opacity:0}}
+  .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 14px 34px -16px rgba(27,24,23,.5);border:1px solid var(--line)}
+  .leaflet-popup-content{margin:14px 16px;font-family:Inter,sans-serif;width:236px!important}
+  .pop-n{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+  .pop-t{font-size:17px;font-weight:600;letter-spacing:-.02em;margin:3px 0 8px;line-height:1.2}
+  .pop-r{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:5px 0;border-top:1px solid var(--line)}
+  .pop-r span{color:var(--ink-35);font-weight:400}
+  .pop-r b{font-weight:500}
+  .leaflet-container{font-family:Inter,sans-serif}
+
+  @media (max-width:1080px){
+    .sp-copy{padding:44px 8px 44px 40px}
+    .sp-foot{padding:14px 40px 20px}
+    .body{grid-template-columns:320px 1fr}
+  }
+  @media (max-width:860px){
+    .sp-wrap{grid-template-columns:1fr;grid-template-rows:auto auto}
+    .sp-copy{padding:34px 24px 8px;gap:20px;order:1}
+    .sp-photo{order:2;padding:0 12px}
+    .sp-photo img{max-height:none}
+    .sp-stamp{display:none}
+    .sp-foot{padding:14px 24px 20px;font-size:10.5px}
+    h1{font-size:clamp(32px,8.4vw,44px)}
+    .body{grid-template-columns:1fr;grid-template-rows:1fr auto}
+    .panel{border-right:0;border-top:1px solid var(--line);order:2;max-height:46vh;
+      border-radius:20px 20px 0 0;box-shadow:0 -10px 30px -20px rgba(27,24,23,.5);z-index:700;margin-top:-20px}
+    .map-wrap{order:1}
+    .legend{display:none}
+    .route-select{display:none}
+    .mobile-only{display:block}
+    .grip{width:42px;height:4px;border-radius:100px;background:var(--line);margin:0 auto 4px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ TELA 1 · APRESENTAÇÃO ══════════ -->
+<section class="screen" id="splash">
+  <div class="sp-wrap">
+    <div class="sp-copy">
+      <span class="badge"><i></i>Crateús · Ceará</span>
+      <div>
+        <p class="sp-eyebrow">Trecho do Arrastão</p>
+        <h1>Conheça a rota do <em>arrastão político</em> em Crateús</h1>
+      </div>
+      <div class="sp-names">
+        <div class="name-chip"><span>Prefeita</span><b>Janaína Farias</b></div>
+        <div class="name-chip"><span>Candidata a Deputada Federal</span><b>Giordana Mano</b></div>
+      </div>
+      <p class="sp-lede">Acompanhe no mapa, rua por rua e na ordem de passagem, por onde a comitiva vai caminhar — do ponto de concentração até o encerramento.</p>
+      <div class="sp-cta">
+        <button class="btn" id="go">Ver a rota no mapa <span class="arrow">→</span></button>
+        <p class="sp-meta"><b>10 pontos de passagem</b><br>Rua 13 de Maio → Rua Afonso Chaves</p>
+      </div>
+    </div>
+    <div class="sp-photo">
+      <span class="sp-stamp">Minha amada Crateús</span>
+      <img src="uploads/WhatsApp%20Image%202026-09-02%20at%2012.01.23.jpeg" alt="Prefeita Janaína Farias e Giordana Mano">
+    </div>
+  </div>
+  <div class="sp-foot">
+    <span>Prefeitura Municipal de Crateús · Coordenação de Comunicação</span>
+    <span>Percurso a pé · Aberto à população e à imprensa</span>
+  </div>
+</section>
+
+<!-- ══════════ TELA 2 · MAPA ══════════ -->
+<section class="screen" id="app" hidden>
+  <header class="topbar">
+    <button class="home-btn" id="home" title="Voltar à tela inicial">←</button>
+    <div class="tb-title"><span>Crateús · CE</span><b>Trecho do Arrastão</b></div>
+    <div class="tb-spacer"></div>
+    <select class="route-select" aria-label="Selecionar trecho">
+      <option>Trecho do Arrastão</option>
+      <option disabled>Novo trecho — em breve</option>
+    </select>
+    <button class="play-btn" id="play">▶ Animar rota</button>
+  </header>
+
+  <div class="body">
+    <aside class="panel">
+      <div class="panel-head">
+        <div class="grip mobile-only"></div>
+        <div class="stat-row">
+          <div class="stat"><b>10</b><span>Pontos</span></div>
+          <div class="stat"><b>~1,4 km</b><span>A pé</span></div>
+          <div class="stat"><b>16h*</b><span>Concentração</span></div>
+        </div>
+        <div class="note"><span>⚑</span><div><b>Prévia para validação.</b> Coordenadas e horários são aproximados — aguardando confirmação da equipe de campo e da agenda.</div></div>
+      </div>
+      <div class="list" id="list"></div>
+    </aside>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="legend">
+        <b>Legenda</b>
+        <div><i class="sw" style="background:#0F7A46"></i>Concentração (início)</div>
+        <div><i class="sw" style="background:#C4122F"></i>Ponto de passagem</div>
+        <div><i class="sw" style="background:#1B1817"></i>Encerramento</div>
+        <div><i class="sw" style="width:18px;height:4px;border-radius:2px;background:#C4122F"></i>Trajeto a pé</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ---- coordenadas corrigidas via OSM/Overpass (Fátima I, Crateús) ---- */
+const STOPS = [
+  /* pin no início de Rua Treze de Maio (sul da via, nó OSM confirmado) */
+  {n:1,  name:"Rua 13 de Maio",              obs:"Concentração da comitiva", time:"16h00*", lat:-5.18008, lng:-40.67452, kind:"start"},
+  /* seguimento ao longo da mesma via, nó intermediário */
+  {n:2,  name:"Rua 13 de Maio (seguimento)", obs:"Início da caminhada",      time:"16h20*", lat:-5.18079, lng:-40.67493},
+  /* centro de Rua Izauro Machado Portela (Way 332302317, mid-point) */
+  {n:3,  name:"Rua Izauro Portela Machado",  obs:"—",                        time:"16h35*", lat:-5.18176, lng:-40.67574},
+  /* centro de Rua João Ribeiro Lima (Way 332302345, nó 3/22 — longe da junção com Izauro) */
+  {n:4,  name:"Rua João Ribeiro Lima",       obs:"—",                        time:"16h50*", lat:-5.18042, lng:-40.67560},
+  /* ponta leste de Rua Zeca Araújo (Way 332307128) */
+  {n:5,  name:"Rua Zeca Araújo",             obs:"—",                        time:"17h05*", lat:-5.18017, lng:-40.67354},
+  /* interseção Rua Afonso Chaves × Rua Noberto Ferreira (nó compartilhado) */
+  {n:6,  name:"Rua Afonso Chaves",           obs:"Nome oficial — trecho 1",  time:"17h20*", lat:-5.18010, lng:-40.67628},
+  /* centro de Rua Noberto Ferreira de Sousa (Way 151773460) */
+  {n:7,  name:"Rua Norberto Ferreira",       obs:"—",                        time:"17h35*", lat:-5.17956, lng:-40.67776},
+  /* centro de Rua João Soares (Way 151773422 + 1506143290) */
+  {n:8,  name:"Rua João Soares",             obs:"—",                        time:"17h50*", lat:-5.17748, lng:-40.67760},
+  /* centro de Rua José Saboia Livreiro (Way 476314885) */
+  {n:9,  name:"Rua José Sabóia (Livreiro)",  obs:"Ponto de discurso",        time:"18h05*", lat:-5.17765, lng:-40.67689},
+  /* extremo norte de Rua Afonso Chaves — "Santinha" (Way 754440338) */
+  {n:10, name:'Rua Afonso Chaves ("Santinha")', obs:"Encerramento · duplicidade a confirmar", time:"18h25*", lat:-5.18157, lng:-40.67775, kind:"end"}
+];
+
+/* ---- geometria real das ruas via OSRM (walking), convertida para Leaflet [lat,lng] ---- */
+const ROUTE_GEO = [
+  [-5.180083,-40.674522],[-5.180797,-40.674927],[-5.181112,-40.675123],
+  [-5.181883,-40.675583],[-5.181764,-40.675738],[-5.181693,-40.675830],
+  [-5.181524,-40.676057],[-5.181455,-40.676143],[-5.180909,-40.675863],
+  [-5.180417,-40.675599],[-5.179930,-40.675353],[-5.179787,-40.675276],
+  [-5.179262,-40.675027],[-5.179702,-40.674311],[-5.180166,-40.673544],
+  [-5.181201,-40.674186],[-5.180797,-40.674927],[-5.180715,-40.675081],
+  [-5.180417,-40.675599],[-5.180100,-40.676281],[-5.179960,-40.676729],
+  [-5.179855,-40.676892],[-5.179759,-40.677108],[-5.179558,-40.677540],
+  [-5.179512,-40.677626],[-5.179355,-40.677941],[-5.179098,-40.678427],
+  [-5.178022,-40.677889],[-5.177483,-40.677603],[-5.177586,-40.677272],
+  [-5.177619,-40.677155],[-5.177642,-40.677044],[-5.177650,-40.676888],
+  [-5.177750,-40.676922],[-5.177843,-40.676960],[-5.177976,-40.676753],
+  [-5.178020,-40.676689],[-5.178047,-40.676626],[-5.178067,-40.676550],
+  [-5.178372,-40.675457],[-5.178443,-40.675488],[-5.178854,-40.675688],
+  [-5.179421,-40.675997],[-5.179566,-40.676054],[-5.179752,-40.676136],
+  [-5.180100,-40.676281],[-5.180324,-40.676418],[-5.180591,-40.676673],
+  [-5.180936,-40.676990],[-5.181036,-40.677092],[-5.181178,-40.677227],
+  [-5.181575,-40.677749]
+];
+
+/* ---- pré-calcula qual ponto do ROUTE_GEO cada stop está mais próximo ---- */
+function nearestGeoIdx(lat, lng) {
+  let best = 0, bestD = Infinity;
+  ROUTE_GEO.forEach((p, i) => {
+    const d = (p[0]-lat)**2 + (p[1]-lng)**2;
+    if (d < bestD) { bestD = d; best = i; }
+  });
+  return best;
+}
+const stopGeoIdx = STOPS.map(s => nearestGeoIdx(s.lat, s.lng));
+
+const $ = s => document.querySelector(s);
+let map, markers = [], liveLine, animTimer = null, sel = null;
+
+/* ---- navegação entre telas ---- */
+$('#go').addEventListener('click', () => {
+  $('#splash').classList.add('out');
+  setTimeout(() => {
+    $('#splash').hidden = true;
+    $('#app').hidden = false;
+    if (!map) initMap(); else setTimeout(() => map.invalidateSize(), 60);
+  }, 380);
+});
+$('#home').addEventListener('click', () => {
+  stopAnim();
+  $('#app').hidden = true;
+  $('#splash').hidden = false;
+  requestAnimationFrame(() => $('#splash').classList.remove('out'));
+});
+
+/* ---- lista lateral ---- */
+const list = $('#list');
+STOPS.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'stop' + (s.kind === 'start' ? ' is-start' : s.kind === 'end' ? ' is-end' : '');
+  b.dataset.n = s.n;
+  b.innerHTML = `<span class="dot">${s.n}</span>
+    <span><h3>${s.name}</h3>
+      <p>${s.time}
+        ${s.kind === 'start' ? '<span class="tag g">Concentração</span>' : ''}
+        ${s.kind === 'end' ? '<span class="tag">Encerramento</span>' : ''}
+        ${!s.kind && s.obs !== '—' ? `<span class="tag">${s.obs}</span>` : ''}
+      </p></span>`;
+  b.addEventListener('click', () => select(s.n, true));
+  list.appendChild(b);
+});
+
+function select(n, fly) {
+  sel = n;
+  document.querySelectorAll('.stop').forEach(el => el.classList.toggle('active', +el.dataset.n === n));
+  markers.forEach(m => m._icon && m._icon.querySelector('.pin').classList.toggle('sel', m.options.stopN === n));
+  const m = markers.find(m => m.options.stopN === n);
+  if (m && map) {
+    if (fly) map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 17), {duration:.7});
+    m.openPopup();
+  }
+}
+
+/* ---- mapa ---- */
+function initMap() {
+  map = L.map('map', {zoomControl:false, scrollWheelZoom:true});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+  L.control.zoom({position:'topright'}).addTo(map);
+
+  /* linha de fundo (contorno branco + tracejado cinza) seguindo as ruas reais */
+  L.polyline(ROUTE_GEO, {color:'#fff', weight:11, opacity:.95, lineJoin:'round'}).addTo(map);
+  L.polyline(ROUTE_GEO, {color:'#C4122F', weight:5, opacity:.4, dashArray:'1 9', lineCap:'round'}).addTo(map);
+  liveLine = L.polyline(ROUTE_GEO, {color:'#C4122F', weight:5.5, opacity:1, lineCap:'round', lineJoin:'round'}).addTo(map);
+
+  STOPS.forEach(s => {
+    const cls = s.kind === 'start' ? 'pin start' : s.kind === 'end' ? 'pin end' : 'pin';
+    const m = L.marker([s.lat, s.lng], {
+      stopN: s.n,
+      icon: L.divIcon({className:'', html:`<div class="${cls}"><b>${s.n}</b></div>`, iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-18]})
+    }).addTo(map);
+    m.bindPopup(`<div class="pop-n">Ponto ${s.n} de 10</div>
+      <div class="pop-t">${s.name}</div>
+      <div class="pop-r"><span>Horário previsto</span><b>${s.time}</b></div>
+      <div class="pop-r"><span>Observação</span><b>${s.obs === '—' ? 'Passagem' : s.obs}</b></div>`);
+    m.on('click', () => select(s.n, false));
+    markers.push(m);
+  });
+
+  map.fitBounds(L.latLngBounds(ROUTE_GEO).pad(.18));
+  select(1, false);
+}
+
+/* ---- animação fluida com interpolação entre pontos da rota ---- */
+function stopAnim() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  $('#play').classList.remove('on');
+  $('#play').textContent = '▶ Animar rota';
+  if (liveLine) liveLine.setLatLngs(ROUTE_GEO);
+}
+
+$('#play').addEventListener('click', () => {
+  if (animTimer) { stopAnim(); return; }
+  const btn = $('#play');
+  btn.classList.add('on'); btn.textContent = '■ Parar';
+  liveLine.setLatLngs([ROUTE_GEO[0]]);
+  map.fitBounds(L.latLngBounds(ROUTE_GEO).pad(.18), {animate: false});
+  select(1, false);
+
+  let seg = 0;   /* segmento atual entre ROUTE_GEO[seg] e ROUTE_GEO[seg+1] */
+  let t = 0;     /* interpolação 0→1 dentro do segmento */
+  const SPEED = 0.018; /* fração por tick — menor = mais lento e suave */
+  let currentStop = 1;
+
+  animTimer = setInterval(() => {
+    t += SPEED;
+    if (t >= 1) {
+      t -= 1;
+      seg++;
+      if (seg >= ROUTE_GEO.length - 1) { stopAnim(); return; }
+      /* verifica se passou por algum stop neste segmento */
+      const hit = stopGeoIdx.findIndex((gi, i) => gi === seg && STOPS[i].n > currentStop);
+      if (hit >= 0) { currentStop = STOPS[hit].n; select(currentStop, false); }
+    }
+    const a = ROUTE_GEO[seg], b = ROUTE_GEO[seg + 1];
+    const cur = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    liveLine.setLatLngs([...ROUTE_GEO.slice(0, seg + 1), cur]);
+  }, 40);
+});
+</script>
+</body>
+</html>
