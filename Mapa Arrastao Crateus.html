@@ -118,7 +118,9 @@
   .legend div{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:400}
   .sw{width:14px;height:14px;border-radius:50%;flex:none}
   /* marcador-avatar animado */
-  .avatar-pin{display:block;width:88px;height:72px;object-fit:cover;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4))}
+  .avatar-pin{display:block;width:104px;height:85px;object-fit:cover;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4))}
+  @keyframes avatarBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .avatar-pin.bounce{animation:avatarBounce .75s ease-in-out infinite}
   /* balão nome da rua */
   .street-label{
     background:var(--red);color:#fff;font-family:Inter,system-ui,sans-serif;
@@ -316,8 +318,8 @@ let map, markers = [], liveLine, animTimer = null, sel = null, avatarMarker = nu
 const AVATAR_ICON = () => L.divIcon({
   className: '',
   html: '<img src="uploads/giordana-janaina.png" class="avatar-pin">',
-  iconSize: [88, 72],
-  iconAnchor: [44, 72]
+  iconSize: [104, 85],
+  iconAnchor: [52, 85]
 });
 
 /* ---- navegação entre telas ---- */
@@ -435,8 +437,22 @@ function stopAnim() {
   removeStreetLabel();
 }
 
+function finishAnim() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  $('#play').classList.remove('on');
+  $('#play').textContent = '▶ Animar rota';
+  if (liveLine) liveLine.setLatLngs(ROUTE_GEO);
+  removeStreetLabel();
+  /* mantém avatar e ativa bounce */
+  if (avatarMarker) {
+    const img = avatarMarker.getElement()?.querySelector('.avatar-pin');
+    if (img) img.classList.add('bounce');
+  }
+}
+
 $('#play').addEventListener('click', () => {
   if (animTimer) { stopAnim(); return; }
+  if (avatarMarker) { avatarMarker.remove(); avatarMarker = null; }
   const btn = $('#play');
   btn.classList.add('on'); btn.textContent = '■ Parar';
   liveLine.setLatLngs([ROUTE_GEO[0]]);
@@ -453,7 +469,7 @@ $('#play').addEventListener('click', () => {
     if (t >= 1) {
       t -= 1;
       seg++;
-      if (seg >= ROUTE_GEO.length - 1) { stopAnim(); return; }
+      if (seg >= ROUTE_GEO.length - 1) { finishAnim(); return; }
       const hit = stopGeoIdx.findIndex((gi, i) => gi === seg && STOPS[i].n > currentStop);
       if (hit >= 0) {
         currentStop = STOPS[hit].n;
