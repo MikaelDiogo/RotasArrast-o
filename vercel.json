@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/Mapa Arrastao Crateus.html" }
+  ]
+}
