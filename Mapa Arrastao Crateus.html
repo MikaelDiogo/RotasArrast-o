@@ -334,7 +334,8 @@ STOPS.forEach(s => {
   list.appendChild(b);
 });
 
-function select(n, fly) {
+let popupTimer = null;
+function select(n, fly, autoClose) {
   sel = n;
   document.querySelectorAll('.stop').forEach(el => el.classList.toggle('active', +el.dataset.n === n));
   markers.forEach(m => m._icon && m._icon.querySelector('.pin').classList.toggle('sel', m.options.stopN === n));
@@ -342,6 +343,10 @@ function select(n, fly) {
   if (m && map) {
     if (fly) map.flyTo(m.getLatLng(), Math.max(map.getZoom(), 17), {duration:.7});
     m.openPopup();
+    if (autoClose) {
+      if (popupTimer) clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => { map.closePopup(); popupTimer = null; }, 1400);
+    }
   }
 }
 
@@ -390,7 +395,7 @@ $('#play').addEventListener('click', () => {
   btn.classList.add('on'); btn.textContent = '■ Parar';
   liveLine.setLatLngs([ROUTE_GEO[0]]);
   map.fitBounds(L.latLngBounds(ROUTE_GEO).pad(.18), {animate: false});
-  select(1, false);
+  select(1, false, true);
 
   let seg = 0;   /* segmento atual entre ROUTE_GEO[seg] e ROUTE_GEO[seg+1] */
   let t = 0;     /* interpolação 0→1 dentro do segmento */
@@ -405,7 +410,7 @@ $('#play').addEventListener('click', () => {
       if (seg >= ROUTE_GEO.length - 1) { stopAnim(); return; }
       /* verifica se passou por algum stop neste segmento */
       const hit = stopGeoIdx.findIndex((gi, i) => gi === seg && STOPS[i].n > currentStop);
-      if (hit >= 0) { currentStop = STOPS[hit].n; select(currentStop, false); }
+      if (hit >= 0) { currentStop = STOPS[hit].n; select(currentStop, false, true); }
     }
     const a = ROUTE_GEO[seg], b = ROUTE_GEO[seg + 1];
     const cur = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
